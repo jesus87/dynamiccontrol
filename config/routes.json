@@ -1,0 +1,90 @@
+{
+  "routes": [
+    {
+      "routeName": "/v1/status",
+      "method": "GET",
+      "requestSchema": {},
+      "responseSchema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["healthy", "degraded", "unhealthy"]
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "version": {
+            "type": "string"
+          },
+          "uptime": {
+            "type": "number"
+          }
+        },
+        "required": ["status", "timestamp", "version", "uptime"]
+      },
+      "policies": ["status_policy"]
+    },
+    {
+      "routeName": "/v1/services/:serviceId/traffic",
+      "method": "POST",
+      "requestSchema": {
+        "type": "object",
+        "properties": {
+          "trafficType": {
+            "type": "string",
+            "enum": ["incoming", "outgoing", "internal"]
+          },
+          "volume": {
+            "type": "number",
+            "minimum": 0
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["low", "medium", "high", "critical"]
+          },
+          "metadata": {
+            "type": "object",
+            "properties": {
+              "source": {
+                "type": "string"
+              },
+              "destination": {
+                "type": "string"
+              },
+              "protocol": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "required": ["trafficType", "volume", "priority"]
+      },
+      "responseSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "serviceId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["accepted", "rejected", "pending"]
+          },
+          "message": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["id", "serviceId", "status", "message", "timestamp"]
+      },
+      "policies": ["traffic_policy", "service_policy"]
+    }
+  ]
+} 

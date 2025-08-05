@@ -1,0 +1,74 @@
+package status_policy
+
+import future.keywords.if
+import future.keywords.in
+
+# Test: Allow GET request to status endpoint
+test_allow_get_status {
+    allow with input as {
+        "method": "GET",
+        "path": "/v1/status"
+    }
+}
+
+# Test: Allow GET request with proper headers
+test_allow_get_status_with_headers {
+    allow with input as {
+        "method": "GET",
+        "path": "/v1/status",
+        "headers": {
+            "Content-Type": "application/json"
+        }
+    }
+}
+
+# Test: Allow GET request with authorization
+test_allow_get_status_with_auth {
+    allow with input as {
+        "method": "GET",
+        "path": "/v1/status",
+        "headers": {
+            "Authorization": "Bearer token123"
+        }
+    }
+}
+
+# Test: Deny POST request to status endpoint
+test_deny_post_status {
+    not allow with input as {
+        "method": "POST",
+        "path": "/v1/status"
+    }
+}
+
+# Test: Deny GET request to wrong path
+test_deny_wrong_path {
+    not allow with input as {
+        "method": "GET",
+        "path": "/v1/wrong"
+    }
+}
+
+# Test: Validate request without query parameters
+test_validate_request_no_query {
+    validate_request with input as {
+        "method": "GET",
+        "path": "/v1/status"
+    }
+}
+
+# Test: Check authorization helper function
+test_is_authorized {
+    is_authorized with input as {
+        "headers": {
+            "Authorization": "Bearer token123"
+        }
+    }
+}
+
+# Test: Check authorization helper function - not authorized
+test_is_not_authorized {
+    not is_authorized with input as {
+        "headers": {}
+    }
+} 
