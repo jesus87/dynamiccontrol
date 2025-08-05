@@ -63,6 +63,7 @@ go run cmd/server/main.go
 ```
 
 4. Execute endpoint tests
+you must set the var BASE_URL to the host you are using to run the API
 ```bash
 cd examples
 test_endpoints.sh
