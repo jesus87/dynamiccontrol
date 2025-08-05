@@ -1,0 +1,98 @@
+package service_policy
+
+import future.keywords.if
+import future.keywords.in
+
+# Test: Allow request with valid service ID
+test_allow_valid_service_id {
+    allow with input as {
+        "method": "POST",
+        "path": "/v1/services/service123/traffic"
+    }
+}
+
+# Test: Allow request with valid service ID and permissions
+test_allow_valid_service_with_permissions {
+    allow with input as {
+        "method": "POST",
+        "path": "/v1/services/service123/traffic",
+        "headers": {
+            "X-Service-Auth": "service-token",
+            "X-User-Permissions": "admin"
+        }
+    }
+}
+
+# Test: Deny request with invalid service ID (too short)
+test_deny_short_service_id {
+    not allow with input as {
+        "method": "POST",
+        "path": "/v1/services/ab/traffic"
+    }
+}
+
+# Test: Deny request with invalid service ID (invalid characters)
+test_deny_invalid_service_id_chars {
+    not allow with input as {
+        "method": "POST",
+        "path": "/v1/services/service@123/traffic"
+    }
+}
+
+# Test: Deny request to wrong path
+test_deny_wrong_path {
+    not allow with input as {
+        "method": "POST",
+        "path": "/v1/wrong/path"
+    }
+}
+
+# Test: Validate service ID format - valid
+test_is_valid_service_id {
+    is_valid_service_id("service123") with input as {}
+}
+
+# Test: Validate service ID format - invalid (too short)
+test_is_invalid_service_id_short {
+    not is_valid_service_id("ab") with input as {}
+}
+
+# Test: Validate service ID format - invalid (special chars)
+test_is_invalid_service_id_chars {
+    not is_valid_service_id("service@123") with input as {}
+}
+
+# Test: Extract service ID from path
+test_get_service_id {
+    get_service_id("/v1/services/service123/traffic") == "service123" with input as {}
+}
+
+# Test: Check service active status
+test_is_service_active {
+    is_service_active("service123") with input as {}
+}
+
+# Test: Check rate limit
+test_check_rate_limit {
+    check_rate_limit("service123") with input as {}
+}
+
+# Test: Validate service access
+test_validate_service_access {
+    validate_service_access with input as {
+        "method": "POST",
+        "path": "/v1/services/service123/traffic"
+    }
+}
+
+# Test: Validate service permissions
+test_validate_service_permissions {
+    validate_service_permissions with input as {
+        "method": "POST",
+        "path": "/v1/services/service123/traffic",
+        "headers": {
+            "X-Service-Auth": "service-token",
+            "X-User-Permissions": "admin"
+        }
+    }
+} 

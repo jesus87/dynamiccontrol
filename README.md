@@ -317,4 +317,4 @@ The application provides comprehensive error handling:
 
 ## License
 
-This project is licensed under @jesusGarcia(Drzola87)
+This project is licensed under jesus87 permission

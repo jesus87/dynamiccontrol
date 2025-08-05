@@ -1,0 +1,159 @@
+package traffic_policy
+
+import future.keywords.if
+import future.keywords.in
+
+# Test: Allow valid POST request to traffic endpoint
+test_allow_valid_traffic_request {
+    allow with input as {
+        "method": "POST",
+        "path": "/v1/services/123/traffic",
+        "body": {
+            "trafficType": "incoming",
+            "volume": 100,
+            "priority": "medium"
+        }
+    }
+}
+
+# Test: Allow valid POST request with metadata
+test_allow_valid_traffic_request_with_metadata {
+    allow with input as {
+        "method": "POST",
+        "path": "/v1/services/123/traffic",
+        "body": {
+            "trafficType": "outgoing",
+            "volume": 200,
+            "priority": "high",
+            "metadata": {
+                "source": "service-a",
+                "destination": "service-b",
+                "protocol": "http"
+            }
+        }
+    }
+}
+
+# Test: Allow critical traffic with authorization
+test_allow_critical_traffic_with_auth {
+    allow with input as {
+        "method": "POST",
+        "path": "/v1/services/123/traffic",
+        "headers": {
+            "Authorization": "Bearer token123"
+        },
+        "body": {
+            "trafficType": "internal",
+            "volume": 500,
+            "priority": "critical",
+            "metadata": {
+                "source": "service-a",
+                "destination": "service-b",
+                "protocol": "grpc"
+            }
+        }
+    }
+}
+
+# Test: Deny POST request to wrong path
+test_deny_wrong_path {
+    not allow with input as {
+        "method": "POST",
+        "path": "/v1/wrong/path",
+        "body": {
+            "trafficType": "incoming",
+            "volume": 100,
+            "priority": "medium"
+        }
+    }
+}
+
+# Test: Deny request with invalid traffic type
+test_deny_invalid_traffic_type {
+    not allow with input as {
+        "method": "POST",
+        "path": "/v1/services/123/traffic",
+        "body": {
+            "trafficType": "invalid",
+            "volume": 100,
+            "priority": "medium"
+        }
+    }
+}
+
+# Test: Deny request with negative volume
+test_deny_negative_volume {
+    not allow with input as {
+        "method": "POST",
+        "path": "/v1/services/123/traffic",
+        "body": {
+            "trafficType": "incoming",
+            "volume": -10,
+            "priority": "medium"
+        }
+    }
+}
+
+# Test: Deny request with invalid priority
+test_deny_invalid_priority {
+    not allow with input as {
+        "method": "POST",
+        "path": "/v1/services/123/traffic",
+        "body": {
+            "trafficType": "incoming",
+            "volume": 100,
+            "priority": "invalid"
+        }
+    }
+}
+
+# Test: Deny high priority without metadata
+test_deny_high_priority_without_metadata {
+    not allow with input as {
+        "method": "POST",
+        "path": "/v1/services/123/traffic",
+        "body": {
+            "trafficType": "incoming",
+            "volume": 100,
+            "priority": "high"
+        }
+    }
+}
+
+# Test: Validate request body structure
+test_validate_request_body {
+    validate_request_body with input as {
+        "method": "POST",
+        "path": "/v1/services/123/traffic",
+        "body": {
+            "trafficType": "incoming",
+            "volume": 100,
+            "priority": "medium"
+        }
+    }
+}
+
+# Test: Validate metadata structure
+test_validate_metadata {
+    validate_metadata with input as {
+        "method": "POST",
+        "path": "/v1/services/123/traffic",
+        "body": {
+            "trafficType": "incoming",
+            "volume": 100,
+            "priority": "medium",
+            "metadata": {
+                "source": "service-a",
+                "destination": "service-b",
+                "protocol": "http"
+            }
+        }
+    }
+}
+
+# Test: Extract service ID from path
+test_get_service_id {
+    get_service_id == "123" with input as {
+        "path": "/v1/services/123/traffic"
+    }
+} 
